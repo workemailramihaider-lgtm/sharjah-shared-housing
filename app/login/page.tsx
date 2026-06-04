@@ -1,16 +1,41 @@
-import { KeyRound } from "lucide-react";
-import { signIn } from "@/app/actions";
+"use client";
 
-export default async function LoginPage({
-  searchParams
-}: {
-  searchParams: Promise<Record<string, string | undefined>>;
-}) {
-  const params = await searchParams;
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createBrowserClient } from "@supabase/ssr";
+import { KeyRound } from "lucide-react";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg(null);
+    const form = e.currentTarget;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setErrorMsg("بيانات الدخول غير صحيحة");
+      setLoading(false);
+    } else {
+      router.push("/dashboard");
+      router.refresh();
+    }
+  }
 
   return (
     <main className="login">
-      <form action={signIn} className="login-panel">
+      <form onSubmit={handleSubmit} className="login-panel">
         <div className="brand">
           <span className="brand-mark">
             <KeyRound size={19} />
@@ -25,8 +50,10 @@ export default async function LoginPage({
           <label>كلمة المرور</label>
           <input className="input" name="password" type="password" required autoComplete="current-password" />
         </div>
-        {params.error ? <div className="notice">{params.error}</div> : null}
-        <button className="btn" type="submit">تسجيل الدخول</button>
+        {errorMsg && <div className="notice">{errorMsg}</div>}
+        <button className="btn" type="submit" disabled={loading}>
+          {loading ? "جاري..." : "تسجيل الدخول"}
+        </button>
       </form>
     </main>
   );
