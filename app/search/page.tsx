@@ -15,7 +15,7 @@ export default async function SearchPage({
   const supabase = await createSupabaseServerClient();
 
   let query = supabase
-    .from("units_public")
+    .from("units")
     .select("*")
     .order("last_update_date", { ascending: false })
     .limit(100);
