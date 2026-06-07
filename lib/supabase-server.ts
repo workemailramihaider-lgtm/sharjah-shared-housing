@@ -7,7 +7,7 @@ export async function createSupabaseServerClient() {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    processNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.!,
+    process.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
