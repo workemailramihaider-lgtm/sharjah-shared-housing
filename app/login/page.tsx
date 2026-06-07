@@ -12,7 +12,7 @@ export default function LoginPage() {
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
   );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
