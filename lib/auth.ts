@@ -20,16 +20,19 @@ export async function getSessionProfile() {
 
   return { user, profile };
 }
-
 export async function requireRole(roles: UserRole[]) {
   const { user, profile } = await getSessionProfile();
 
-  if (!user || !profile) {
-    redirect("/login");
+  if (!user) {
+    throw new Error("AUTH_DEBUG: user is null");
+  }
+
+  if (!profile) {
+    throw new Error("AUTH_DEBUG: profile is null");
   }
 
   if (!roles.includes(profile.role)) {
-    redirect("/search");
+    throw new Error(`AUTH_DEBUG: role ${profile.role} not allowed`);
   }
 
   return { user, profile };
